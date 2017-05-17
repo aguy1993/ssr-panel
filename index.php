@@ -21,6 +21,7 @@ $base64pass = base64_encode($user_info['passwd']);
     <title>Hi,<?php echo $user_info['name'];?> - moehoro - SSR</title>
 
     <script src="https://o3hyb3eh5.qnssl.com/ss/asset/js/jQuery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="static/jquery-confirm.min.css" />
     <script src="static/jquery-confirm.min.js"></script>
@@ -77,14 +78,16 @@ $base64pass = base64_encode($user_info['passwd']);
 
 <script>
     var showQrcode = function (ssr) {
-        $.alert({
+        $.dialog({
             title: '扫描二维码',
+            animation: 'scale',
             content: '<img src="https://ssr.moehoro.com/genCode.php?url='+ssr+'">',
         });
     };
     var showDownPage = function () {
-        $.alert({
+        $.dialog({
             title: '客户端下载',
+            confirmButtonClass: 'btn-primary',
             content: '<p>PC:<a href="https://github.com/shadowsocksr/shadowsocksr-csharp/releases" target="_blank">link</a></p><p>MAC: <a href="https://github.com/qinyuhang/ShadowsocksX-NG/releases" target="_blank">link1</a> <a href="https://github.com/yichengchen/ShadowsocksX-R/releases" target="_blank">link2</a></p><p>Android:<a href="https://github.com/shadowsocksr/shadowsocksr-android/releases" target="_blank">link</a></p><p>IOS:<a href="https://itunes.apple.com/us/app/shadowrocket/id932747118" target="_blank">shadowrocket</a></p>',
         });
     };

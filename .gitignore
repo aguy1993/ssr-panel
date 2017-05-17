@@ -1,3 +1,5 @@
 Dockerfile
 docker-compose.yml
 lib/config.php
+.idea/
+demo/
