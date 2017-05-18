@@ -9,7 +9,7 @@ $matrixPointSize = 6;//生成图片大小
 //生成二维码图片
 QRcode::png($value, '/tmp/qrcode/qrcode.png', $errorCorrectionLevel, $matrixPointSize, 2);
 $logo = 'lib/avatar/'.rand(1,6).'.jpg';//准备好的logo图片
-$QR = '/tmp/qrcode.png';//已经生成的原始二维码图
+$QR = '/tmp/qrcode/qrcode.png';//已经生成的原始二维码图
 
 if ($logo !== FALSE) {
     $QR = imagecreatefromstring(file_get_contents($QR));
