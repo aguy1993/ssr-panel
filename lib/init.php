@@ -3,6 +3,8 @@
 require_once 'config.php';
 require_once 'Medoo.php';
 
+date_default_timezone_set('PRC');
+
 $db = new medoo([
     // required
     'database_type' => DB_TYPE,
