@@ -1,0 +1,1 @@
+5 * * * * php /root/resetSSR/traffic_statistics.php >> /root/resetSSR/ss.log
