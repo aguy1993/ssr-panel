@@ -85,7 +85,8 @@
 </script>
 <script>
     $(document).ready(function(){
-        $("#login").click(function(){
+
+        var login = function () {
             $.ajax({
                 type:"POST",
                 url:"action/_login.php",
@@ -110,6 +111,16 @@
                     alert("后台错误："+jqXHR.status);
                 }
             });
+        };
+
+        $(document).keyup(function (event) {
+            if(event.keyCode==13){
+                login();
+            }
+        });
+
+        $("#login").click(function(){
+            login();
         })
     });
 </script>

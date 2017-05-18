@@ -79,34 +79,42 @@
 
 
 <script>
+    var reg = function () {
+        $.ajax({
+            type:"POST",
+            url:"action/_reg.php",
+            dataType:"json",
+            data:{
+                email: $("#email").val(),
+                passwd: $("#passwd").val(),
+                name: $("#name").val(),
+                reg_code: $("#reg_code").val()
+            },
+            success:function(data){
+                if(data.ok){
+                    $("#msg-error").hide();
+                    $("#msg-success").show();
+                    $("#msg-success-p").html(data.msg);
+                    window.setTimeout("location.href='login.php'", 2000);
+                }else{
+                    $("#msg-error").show();
+                    $("#msg-error-p").html(data.msg);
+                }
+            },
+            error:function(jqXHR){
+                alert("后台错误："+jqXHR.status);
+            }
+        });
+    };
+    $(document).keyup(function (e) {
+        if(e.keyCode == 13){
+            reg();
+        }
+    });
     $(document).ready(function(){
         $("#login").click(function(){
-            $.ajax({
-                type:"POST",
-                url:"action/_reg.php",
-                dataType:"json",
-                data:{
-                    email: $("#email").val(),
-                    passwd: $("#passwd").val(),
-                    name: $("#name").val(),
-                    reg_code: $("#reg_code").val()
-                },
-                success:function(data){
-                    if(data.ok){
-                        $("#msg-error").hide();
-                        $("#msg-success").show();
-                        $("#msg-success-p").html(data.msg);
-                        window.setTimeout("location.href='login.php'", 2000);
-                    }else{
-                        $("#msg-error").show();
-                        $("#msg-error-p").html(data.msg);
-                    }
-                },
-                error:function(jqXHR){
-                    alert("后台错误："+jqXHR.status);
-                }
-            });
-        })
+            reg();
+        });
     })
 </script>
 </body>
