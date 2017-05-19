@@ -25,6 +25,11 @@ $base64pass = base64_encode($user_info['passwd']);
     <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="static/jquery-confirm.min.css" />
     <script src="static/jquery-confirm.min.js"></script>
+    <style>
+        body{
+            background-image: url("./static/background/<?php echo rand(1,3);?>.jpg");
+        }
+    </style>
 
 </head>
 
