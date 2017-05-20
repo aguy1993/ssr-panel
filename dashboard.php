@@ -39,7 +39,6 @@ $base64pass = base64_encode($user_info['passwd']);
         <h2 id="info">
             <p>Email:<?php echo $user_info['email'];?></p>
             <p>Expire Date:<span id="expire-date"><?php echo $user_info['expire_date'];?></span>(<a href="#" onclick="renew()">续费</a>)</p>
-            <p>兑换码购买：<a href="http://tb.am/qtowh" target="_blank">年卡</a> <a href="http://moehoro.yunfaka.com" target="_blank">月卡</a></p>
         </h2>
 
         <section id="tag">
@@ -53,13 +52,14 @@ $base64pass = base64_encode($user_info['passwd']);
             <p>累计使用流量：<?php echo $comm::format_bytes($user_info['u']+$user_info['d']+$user_info['total']); ?></p>
         </section>
     </header>
-
-    <a href="#" class="l_a" onclick="showDownPage()">
-        客户端
-    </a>
+    <a href="#" class="l_a" onclick="showPage('purchase-page','激活码购买')">激活码购买</a>
+    <a href="#" style="color:red;" class="l_a" onclick="$.dialog({title:'使用帮助',content:'<img src=./static/ssr-help.jpg>'})">使用帮助</a>
+    <br>
+    <a href="#" class="l_a" onclick="showPage('client-page','客户端下载')">客户端</a>
     <input type="text" id="sckey" value="<?php echo $user_info['sckey'] ;?>" hidden="hidden">
     <a href="#" onclick="setSckey()">微信提醒</a>
     <a target="_blank" href="traffic.php">流量详情</a>
+    <hr style="height:1px;border:none;border-top:1px dashed #000;" />
     <nav id="btndiv">
         <p></p>
         <?php
@@ -70,12 +70,8 @@ $base64pass = base64_encode($user_info['passwd']);
         ?>
     </nav>
 </div>
-
+<script src="./static/page.js"></script>
 <script>
-    $(document).ready(function () {
-//        alert($("#expire-date").html());
-
-    });
     /**
      * 绘制流量使用饼图
      *
@@ -83,6 +79,10 @@ $base64pass = base64_encode($user_info['passwd']);
     var circle = document.getElementById("c1");
     var percent = <?php echo round(($user_info['u']+$user_info['d'])/$user_info['transfer_enable'],2);?>, perimeter = Math.PI * 2 * 36;
     circle.setAttribute('stroke-dasharray', perimeter * percent + " " + perimeter * (1- percent));
+    $(document).ready(function () {
+//        alert($("#expire-date").html());
+
+    });
 
     /**
      * Copy ssr链接
@@ -103,6 +103,12 @@ $base64pass = base64_encode($user_info['passwd']);
             });
         }
     };
+    var showPage = function (page,name) {
+        $.dialog({
+            title:name,
+            content:'url:./static/'+page+'.html',
+        });
+    };
     /**
      * 弹出二维码
      * @param ssr
@@ -111,17 +117,11 @@ $base64pass = base64_encode($user_info['passwd']);
         $.dialog({
             title: '扫描二维码',
             animation: 'scale',
-            content: '<img src="https://ssr.moehoro.com/genCode.php?url='+ssr+'"><div class="input-group"><input id="ssr-url" class="form-control" type="url" value="'+ssr+'" /><span class="input-group-addon btn btn-info" onclick="jsCopy()">复制</span></div>',
-        });
-    };
-    /**
-     * 弹出客户端下载页面
-     */
-    var showDownPage = function () {
-        $.dialog({
-            title: '客户端下载',
-            confirmButtonClass: 'btn-primary',
-            content: '<p>PC:<a href="https://github.com/shadowsocksr/shadowsocksr-csharp/releases" target="_blank">link</a></p><p>MAC: <a href="https://github.com/qinyuhang/ShadowsocksX-NG/releases" target="_blank">link1</a> <a href="https://github.com/yichengchen/ShadowsocksX-R/releases" target="_blank">link2</a></p><p>Android:<a href="https://github.com/shadowsocksr/shadowsocksr-android/releases" target="_blank">link</a></p><p>IOS:<a href="https://itunes.apple.com/us/app/shadowrocket/id932747118" target="_blank">shadowrocket</a></p>',
+            content: '<img src="https://ssr.moehoro.com/genCode.php?url='+ssr+'">' +
+            '<div class="input-group">' +
+            '<input id="ssr-url" class="form-control" type="url" value="'+ssr+'" />' +
+            '<span class="input-group-addon btn btn-info" onclick="jsCopy()">复制</span>' +
+            '</div>',
         });
     };
     /**
@@ -155,34 +155,38 @@ $base64pass = base64_encode($user_info['passwd']);
      * 设置微信提醒
      */
     var setSckey = function () {
-      if ($('#sckey').val()) {
-        alert('您已经开通了微信提醒功能，无需重复开通！');
-      }else{
-        var sckey_input = prompt('请输入SCKEY，获取方法请联系管理员');
-        if (sckey_input != null && sckey_input != '') {
-          //alert('您输入的'+sckey_input);
-          $.ajax({
-              type:"POST",
-              url:"action/_setsckey.php",
-              dataType:"json",
-              data:{
-                  uid: <?php echo $uid;?>,
-                  sckey: sckey_input
-              },
-              success:function(data){
-                  if(data.ok){
-                      alert(data.msg);
-                  }else{
-                      alert(data.msg);
-                  }
-              },
-              error:function(jqXHR){
-                  alert("后台错误："+jqXHR.status);
-              }
-          });
+        $.dialog({
+            title:'设置微信提醒',
+            content:'<div class="input-group">' +
+            '<input id="input-sckey" class="form-control" type="text" value="'+$("#sckey").val()+'" placeholder="请输入SCKEY" />' +
+            '<span onclick="setSckeyAction()" class="input-group-addon btn btn-info">绑定</span>' +
+            '</div><br><p>获取SCKEY: <a target="_blank" href="http://sc.ftqq.com/3.version">点我</a><p>'
+        });
+    };
+    var setSckeyAction = function () {
+        if($("#sckey").val() != $("#input-sckey").val() && $("#input-sckey").val != null && $("#input-sckey").val() != ''){
+            $.ajax({
+                type:"POST",
+                url:"action/_setsckey.php",
+                dataType:"json",
+                data:{
+                    sckey: $("#input-sckey").val()
+                },
+                success:function(data){
+                    if(data.ok){
+                        $("#sckey").val($("#input-sckey").val());
+                        $.alert({title:'设置成功',content:data.msg,});
+                    }else{
+                        $.alert({title:'设置失败',content:data.msg,});
+                    }
+                },
+                error:function(jqXHR){
+                    alert("后台错误：" + jqXHR.status);
+                }
+            });
         }
-      }
     };
 </script>
+
 </body>
 </html>

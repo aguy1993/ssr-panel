@@ -1,10 +1,12 @@
 <?php
+header("Content-type: application/json");
 require_once '../lib/init.php';
 $user = new User();
 $comm = new Comm();
 
 $sckey = strtolower($_POST['sckey']);
-$uid = $_POST['uid'];
+session_start();
+$uid = $_SESSION['uid'];
 
 $json_res = json_decode($comm->sc_send('SSR微信提醒测试','Hi，这是一条测试消息。 随机字符：'.$comm->genStr(),$sckey));
 $rs['ok'] = 0;
