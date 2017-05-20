@@ -62,8 +62,14 @@
             </div><!-- /.col -->
             <div class="col-xs-4">
                 <button id="login" type="submit" class="btn btn-primary btn-block btn-flat">登录</button>
-            </div><!-- /.col -->
+            </div>
         </div>
+        <div class="social-auth-links text-center">
+            <p>- OR -</p>
+            <a href="register.php" class="btn btn-success btn-block btn-flat">激活账户</a>
+        </div>
+
+        <a href="#" onclick="alert('请联系管理员')">忘记密码？</a><br>
     </div><!-- /.login-box-body -->
 </div><!-- /.login-box -->
 
@@ -133,7 +139,7 @@
                         $("#msg-error").hide();
                         $("#msg-success").show();
                         $("#msg-success-p").html(data.msg);
-                        window.setTimeout("location.href='index.php'", 2000);
+                        window.setTimeout("location.href='dashboard.php'", 2000);
                     }else{
                         captchaObj.reset();
                         $("#msg-error").show();
@@ -147,22 +153,18 @@
         });
     };
     $.ajax({
-        url: "./action/_genCaptcha.php?t=" + (new Date()).getTime(), // 加随机数防止缓存
+        url: "./action/_genCaptcha.php?t=" + (new Date()).getTime(),
         type: "get",
         dataType: "json",
         success: function (data) {
             console.log(data);
-            // 使用initGeetest接口
-            // 参数1：配置参数
-            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
             initGeetest({
                 width:'100%',
                 gt: data.gt,
                 challenge: data.challenge,
                 new_captcha: data.new_captcha,
-                product: "embed", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
-                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
-                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
+                product: "embed",
+                offline: !data.success
             }, handlerEmbed);
         }
     });

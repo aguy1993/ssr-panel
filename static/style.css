@@ -127,24 +127,7 @@ ul li {
 	color: #555;
 }
 
-/*@media screen and (min-width: 600px){*/
-
-	/*#hidetext {*/
-		/*display: none;*/
-	/*}*/
-
-/*}*/
-
 @media screen and (max-width: 599px){
-
-	#btndiv {
-		display: none;
-	}
-
-	body {
-		/*background: #121314;*/
-		color: #FEFEFE;
-	}
 
 	#hitokoto a:hover {
 		color: #FFF;
@@ -155,10 +138,6 @@ ul li {
 		height: 100%;
 		width: 100%;
 		top: 0;
-	}
-
-	p, h1, h2, a, p:hover, h1:hover, h2:hover, a:hover {
-		color: #FEFEFE;
 	}
 
 }
