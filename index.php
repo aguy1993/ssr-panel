@@ -18,18 +18,14 @@ $base64pass = base64_encode($user_info['passwd']);
 <head>
 
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title>Hi,<?php echo $user_info['name'];?> - moehoro - SSR</title>
-
     <script src="https://o3hyb3eh5.qnssl.com/ss/asset/js/jQuery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="static/jquery-confirm.min.css" />
     <script src="static/jquery-confirm.min.js"></script>
-    <style>
-        body{
-            background-image: url("./static/background/<?php echo rand(1,3);?>.jpg");
-        }
-    </style>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
 </head>
 

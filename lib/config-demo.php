@@ -9,3 +9,6 @@ define('DB_CHARSET','utf8');
 define('DB_TYPE','mysql'); 
 
 $key = 'dsd42fad1231a';
+
+define("CAPTCHA_ID", "");
+define("PRIVATE_KEY", "");

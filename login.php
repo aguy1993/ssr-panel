@@ -17,6 +17,7 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 </head>
 <body class="login-page">
 <div class="login-box">
@@ -46,8 +47,9 @@
                 <input id="passwd" name="Password" type="password" class="form-control" placeholder="密码"/>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
-            <div id="captcha-gee" class="form-group has-feedback">
-
+            <div id="embed-captcha" class="form-group has-feedback">
+                <p id="wait" class="show">正在加载验证码......</p>
+                <p id="notice" class="hide">请先完成验证</p>
             </div>
         </form>
         <div class="row">
@@ -87,30 +89,7 @@
     $(document).ready(function(){
 
         var login = function () {
-            $.ajax({
-                type:"POST",
-                url:"action/_login.php",
-                dataType:"json",
-                data:{
-                    email: $("#email").val(),
-                    passwd: $("#passwd").val(),
-                    remember_me: $("#remember_me").val()
-                },
-                success:function(data){
-                    if(data.ok){
-                        $("#msg-error").hide();
-                        $("#msg-success").show();
-                        $("#msg-success-p").html(data.msg);
-                        window.setTimeout("location.href='index.php'", 2000);
-                    }else{
-                        $("#msg-error").show();
-                        $("#msg-error-p").html(data.msg);
-                    }
-                },
-                error:function(jqXHR){
-                    alert("后台错误："+jqXHR.status);
-                }
-            });
+
         };
 
         $(document).keyup(function (event) {
@@ -122,6 +101,70 @@
         $("#login").click(function(){
             login();
         })
+    });
+</script>
+<script src="./static/gt.js"></script>
+<script>
+    var handlerEmbed = function (captchaObj) {
+        captchaObj.appendTo("#embed-captcha");
+        captchaObj.onReady(function () {
+            $("#wait")[0].className = "hide";
+        });
+
+        $("#login").click(function () {
+            var result = captchaObj.getValidate();
+            if (!result) {
+                return alert('请完成验证');
+            }
+            $.ajax({
+                type:"POST",
+                url:"action/_login.php",
+                dataType:"json",
+                data:{
+                    email: $("#email").val(),
+                    passwd: $("#passwd").val(),
+                    remember_me: $("#remember_me").val(),
+                    geetest_challenge: result.geetest_challenge,
+                    geetest_validate: result.geetest_validate,
+                    geetest_seccode: result.geetest_seccode
+                },
+                success:function(data){
+                    if(data.result === 'success'){
+                        $("#msg-error").hide();
+                        $("#msg-success").show();
+                        $("#msg-success-p").html(data.msg);
+                        window.setTimeout("location.href='index.php'", 2000);
+                    }else{
+                        captchaObj.reset();
+                        $("#msg-error").show();
+                        $("#msg-error-p").html(data.msg);
+                    }
+                },
+                error:function(jqXHR){
+                    alert("后台错误："+jqXHR.status);
+                }
+            });
+        });
+    };
+    $.ajax({
+        url: "./action/_genCaptcha.php?t=" + (new Date()).getTime(), // 加随机数防止缓存
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            console.log(data);
+            // 使用initGeetest接口
+            // 参数1：配置参数
+            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+            initGeetest({
+                width:'100%',
+                gt: data.gt,
+                challenge: data.challenge,
+                new_captcha: data.new_captcha,
+                product: "embed", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
+            }, handlerEmbed);
+        }
     });
 </script>
 </body>
