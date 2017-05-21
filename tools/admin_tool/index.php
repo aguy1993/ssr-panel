@@ -4,7 +4,7 @@ $admin = new Admin();
 $all_user = $admin->get_all_user();
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -12,7 +12,7 @@ $all_user = $admin->get_all_user();
     <meta name="description" content="" />
     <meta name="author" content="" />
     <link rel="icon" href="https://v3.bootcss.com/favicon.ico" />
-    <title>Dashboard Template for Bootstrap</title>
+    <title>SSR Admin tool</title>
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -68,7 +68,7 @@ $all_user = $admin->get_all_user();
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>#ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>流量占比</th>
@@ -88,13 +88,13 @@ $all_user = $admin->get_all_user();
                     <tr>
                         <?php
                         echo "<td>".$data['uid']."</td>";
-                        echo "<td>".$data['name']."</td>";
+                        echo "<td alt=''>".$data['name']."</td>";
                         echo "<td>".$data['email']."</td>";
                         ?>
                         <td>
                         <div class="progress progress-striped active"> 
                             <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo round(($data['u']+$data['d'])/$data['transfer_enable'],2)*100;echo "%";?>;">
-                                <span class="sr-only"><?php echo round(($data['u']+$data['d'])/$data['transfer_enable'],2)*100;echo "%";?> 完成</span>
+                                <span class="sr-only" title="<?php echo $admin->format_bytes($data['u']+$data['d']).' / '.$admin->format_bytes($data['transfer_enable']);?>"><?php echo round(($data['u']+$data['d'])/$data['transfer_enable'],2)*100;echo "%";?> 完成</span>
                             </div> 
                         </div>
                         </td>
