@@ -3,7 +3,7 @@ require_once 'lib/init.php';
 
 $res = $db->select('user','*');
 
-$record_date = date('Y-m-d',strtotime('-10 day'));
+$record_date = date('Y-m-d',strtotime('-1 day'));
 
 if (date('d') == 1) {
     //月初清空流量
