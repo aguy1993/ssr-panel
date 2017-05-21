@@ -1,6 +1,7 @@
 <?php
 include_once 'lib/init.php';
 include_once 'lib/phpqrcode.php';
+require_once 'action/_check.php';
 
 $value = $_GET['url'];//二维码内容
 $errorCorrectionLevel = 'L';//容错级别

@@ -1,11 +1,7 @@
 <?php
 require_once 'lib/init.php';
-session_start();
-if(isset($_SESSION['uid']) && $_SESSION['uid'] != null){
-    $uid = $_SESSION['uid'];
-}else{
-    header("Location:login.php");
-}
+require_once 'action/_check.php';
+
 $user = new User();
 $user_info = $user->get_user_info($uid);
 $comm = new Comm();
@@ -70,7 +66,6 @@ $base64pass = base64_encode($user_info['passwd']);
         ?>
     </nav>
 </div>
-<script src="./static/page.js"></script>
 <script>
     /**
      * 绘制流量使用饼图
@@ -80,8 +75,21 @@ $base64pass = base64_encode($user_info['passwd']);
     var percent = <?php echo round(($user_info['u']+$user_info['d'])/$user_info['transfer_enable'],2);?>, perimeter = Math.PI * 2 * 36;
     circle.setAttribute('stroke-dasharray', perimeter * percent + " " + perimeter * (1- percent));
     $(document).ready(function () {
-//        alert($("#expire-date").html());
-
+        var remainDay = Math.floor((Date.parse($("#expire-date").html())-Date.parse('<?php echo date('Y-m-d');?>'))/(24*3600*1000));
+        if(remainDay <= 30 && remainDay >= 0){
+            $.dialog({
+                title:'续费提醒',
+                content:'服务时间剩余'+remainDay+'天，请及时续<del>命</del>费<br><a href="#" onclick="renew()">点我续费</a>',
+            });
+            $("#expire-date").css('color','red');
+        }else if(remainDay < 0){
+            $.dialog({
+                title:'续费提醒',
+                content:'服务已到期，请及时续<del>命</del>费<br><a href="#" onclick="renew()">点我续费</a>',
+            });
+            $("#expire-date").html('已过期');
+            $("#expire-date").css('color','red');
+        }
     });
 
     /**

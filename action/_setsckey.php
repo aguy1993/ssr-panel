@@ -1,6 +1,8 @@
 <?php
 header("Content-type: application/json");
 require_once '../lib/init.php';
+require_once '_check.php';
+
 $user = new User();
 $comm = new Comm();
 

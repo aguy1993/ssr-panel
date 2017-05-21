@@ -38,27 +38,29 @@
             <h4><i class="icon fa fa-warning"></i> 出错了!</h4>
             <p id="msg-error-p"></p>
         </div>
-        <form>
-            <div class="form-group has-feedback">
-                <input id="email" name="Email" type="text" class="form-control" placeholder="邮箱"/>
-                <span  class="glyphicon glyphicon-envelope form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input id="passwd" name="Password" type="password" class="form-control" placeholder="密码"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input id="name" name="name" type="text" class="form-control" placeholder="昵称"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input id="reg_code" name="reg_code" type="text" class="form-control" placeholder="激活码"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-        </form>
+        <div class="form-group has-feedback">
+            <input id="email" name="Email" type="text" class="form-control" placeholder="邮箱"/>
+            <span  class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input id="passwd" name="Password" type="password" class="form-control" placeholder="密码"/>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input id="name" name="name" type="text" class="form-control" placeholder="昵称"/>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input id="reg_code" name="reg_code" type="text" class="form-control" placeholder="激活码"/>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div id="embed-captcha" class="form-group has-feedback">
+            <p id="wait" class="show">正在加载验证码......</p>
+            <p id="notice" class="hide">请先完成验证</p>
+        </div>
         <div class="row">
             <div class="col-xs-12">
-                <button id="login" type="submit" class="btn btn-primary btn-block btn-flat">激活</button>
+                <button id="reg" type="submit" class="btn btn-primary btn-block btn-flat">激活</button>
             </div><!-- /.col -->
         </div>
         <div class="row">
@@ -78,45 +80,66 @@
 
 <script src="https://static.geetest.com/static/tools/gt.js"></script>
 
-
+<script src="./static/gt.js"></script>
 <script>
-    var reg = function () {
-        $.ajax({
-            type:"POST",
-            url:"action/_reg.php",
-            dataType:"json",
-            data:{
-                email: $("#email").val(),
-                passwd: $("#passwd").val(),
-                name: $("#name").val(),
-                reg_code: $("#reg_code").val()
-            },
-            success:function(data){
-                if(data.ok){
-                    $("#msg-error").hide();
-                    $("#msg-success").show();
-                    $("#msg-success-p").html(data.msg);
-                    window.setTimeout("location.href='login.php'", 2000);
-                }else{
-                    $("#msg-error").show();
-                    $("#msg-error-p").html(data.msg);
-                }
-            },
-            error:function(jqXHR){
-                alert("后台错误："+jqXHR.status);
+    var handlerEmbed = function (captchaObj) {
+        captchaObj.appendTo("#embed-captcha");
+        captchaObj.onReady(function () {
+            $("#wait")[0].className = "hide";
+        });
+
+        $("#reg").click(function () {
+            var result = captchaObj.getValidate();
+            if (!result) {
+                return alert('请完成验证');
             }
+            $.ajax({
+                type:"POST",
+                url:"action/_reg.php",
+                dataType:"json",
+                data:{
+                    email: $("#email").val(),
+                    passwd: $("#passwd").val(),
+                    name: $("#name").val(),
+                    reg_code: $("#reg_code").val(),
+                    geetest_challenge: result.geetest_challenge,
+                    geetest_validate: result.geetest_validate,
+                    geetest_seccode: result.geetest_seccode
+                },
+                success:function(data){
+                    if(data.ok === 'success'){
+                        $("#msg-success").hide();
+                        $("#msg-success").show();
+                        $("#msg-success-p").html(data.msg);
+                        window.setTimeout("location.href='login.php'", 2000);
+                    }else{
+                        captchaObj.reset();
+                        $("#msg-error").show();
+                        $("#msg-error-p").html(data.msg);
+                    }
+                },
+                error:function(jqXHR){
+                    alert("后台错误："+jqXHR.status);
+                }
+            });
         });
     };
-    $(document).keyup(function (e) {
-        if(e.keyCode == 13){
-            reg();
+    $.ajax({
+        url: "./action/_genCaptcha.php?t=" + (new Date()).getTime(),
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            console.log(data);
+            initGeetest({
+                width:'100%',
+                gt: data.gt,
+                challenge: data.challenge,
+                new_captcha: data.new_captcha,
+                product: "embed",
+                offline: !data.success
+            }, handlerEmbed);
         }
     });
-    $(document).ready(function(){
-        $("#login").click(function(){
-            reg();
-        });
-    })
 </script>
 </body>
 </html>

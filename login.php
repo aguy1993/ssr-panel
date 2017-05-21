@@ -91,24 +91,6 @@
         });
     });
 </script>
-<script>
-    $(document).ready(function(){
-
-        var login = function () {
-
-        };
-
-        $(document).keyup(function (event) {
-            if(event.keyCode==13){
-                login();
-            }
-        });
-
-        $("#login").click(function(){
-            login();
-        })
-    });
-</script>
 <script src="./static/gt.js"></script>
 <script>
     var handlerEmbed = function (captchaObj) {

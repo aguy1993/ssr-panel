@@ -1,5 +1,8 @@
 <?php
+header("Content-type: application/json");
 require_once '../lib/init.php';
+require_once  '../action/_verifyCaptcha.php';
+
 $res = new Register();
 $code = new Code();
 $user = new User();
@@ -11,8 +14,11 @@ $passwd = $_POST['passwd'];
 $name = $_POST['name'];
 $reg_code = $_POST['reg_code'];
 
+$a['result'] = 'fail';
 
-if (strlen($email) > 32 || strlen($email) < 6 || $email == '') {
+if(!$rs_ca){
+    $a['msg'] = '验证码错误';
+}elseif (strlen($email) > 32 || strlen($email) < 6 || $email == '') {
     $a['msg'] = "邮箱不符合规范！";
 }elseif (strlen($passwd) > 16 || strlen($passwd) < 6 || $passwd == '') {
     $a['msg'] = "密码不符合规范！";
@@ -30,7 +36,7 @@ if (strlen($email) > 32 || strlen($email) < 6 || $email == '') {
     $res = $reg->get_uid($email);
     $code->update($reg_code,$res,$month);
 
-    $a['ok'] = '1';
+    $a['result'] = 'success';
     $a['msg'] = "注册成功！";
 }
 echo json_encode($a);
