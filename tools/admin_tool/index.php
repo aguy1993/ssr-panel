@@ -2,6 +2,7 @@
 require_once 'lib/init.php';
 $admin = new Admin();
 $all_user = $admin->get_all_user();
+$count_info = $admin->get_count();
 ?>
 <!doctype html>
 <html lang="zh-cn">
@@ -19,6 +20,12 @@ $all_user = $admin->get_all_user();
     <link href="https://v3.bootcss.com/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet" />
     <!-- Custom styles for this template -->
     <link href="https://v3.bootcss.com/examples/dashboard/dashboard.css" rel="stylesheet" />
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="http://v3.bootcss.com/assets/js/vendor/holder.min.js"></script>
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="http://v3.bootcss.com/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script src="http://v3.bootcss.com/assets/js/ie-emulation-modes-warning.js"></script>
@@ -26,7 +33,10 @@ $all_user = $admin->get_all_user();
     <!--[if lt IE 9]>
     <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
     <![endif]-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.2.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.2.0/jquery-confirm.min.js"></script>
     <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
         .en-markup-crop-options {
             top: 18px !important;
@@ -64,20 +74,22 @@ $all_user = $admin->get_all_user();
 
         <div class="col-sm-12 main">
             <h1 class="page-header">Dashboard</h1>
+            <button type="button" class="btn btn-info">发送通知</button>
+            <button type="button" class="btn btn-danger">清空流量</button>
+            <button type="button" class="btn btn-success">新增用户</button>
+            <br><br>
+            <pre><?php echo "系统统计 -- 注册用户：".$count_info['count_user']." 活跃用户：".$count_info['count_active']." 月流量：".$admin->format_bytes($count_info['count_traffic'])." 过期用户：".$count_info['count_expire_user']." 告警用户：".$count_info['count_alert_user']." ";?></pre>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>#ID</th>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>流量占比</th>
                         <th>流量</th>
                         <th>总流量</th>
                         <th>过期日期</th>
-                        <th>注册日期</th>
-                        <th>更新日期</th>
-                        <th>最后登录</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -88,7 +100,7 @@ $all_user = $admin->get_all_user();
                     <tr>
                         <?php
                         echo "<td>".$data['uid']."</td>";
-                        echo "<td alt=''>".$data['name']."</td>";
+                        echo "<td><a href='#' onclick='update_user(".$data['uid'].")'>".$data['name']."</a></td>";
                         echo "<td>".$data['email']."</td>";
                         ?>
                         <td>
@@ -102,10 +114,12 @@ $all_user = $admin->get_all_user();
                         echo "<td>".$admin->format_bytes($data['u']+$data['d']).' / '.$admin->format_bytes($data['transfer_enable'])."</td>";
                         echo "<td>".$admin->format_bytes($data['u']+$data['d']+$data['total'])."</td>";
                         echo "<td>".$data['expire_date']."</td>";
-                        echo "<td>".$data['reg_date']."</td>";
-                        echo "<td>".$data['update_date']."</td>";
-                        echo "<td>".$data['last_login']."</td>";
-                        echo "<td><button type=\"button\" class=\"btn btn-success\">清空流量</button></td>";
+                        echo "<td><button type=\"button\" class=\"btn btn-success\">清空流量</button>";
+                        echo " <button type=\"button\" class=\"btn btn-danger\">删除</button>";
+                        echo " <button type=\"button\" class=\"btn btn-info\" onclick=\"send_alert('".$data['sckey']."')\"";
+                        if ($data['sckey'] == ""){ echo "disabled='disabled'";}
+                        echo ">通知</button>";
+                        echo "</td>";
                     ?>
                     </tr>
                         <?php
@@ -117,17 +131,59 @@ $all_user = $admin->get_all_user();
         </div>
     </div>
 </div>
-<!-- Bootstrap core JavaScript
-    ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="http://v3.bootcss.com/assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-<script src="http://v3.bootcss.com/assets/js/vendor/holder.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
 <script src="http://v3.bootcss.com/assets/js/ie10-viewport-bug-workaround.js"></script>
-<script aria-hidden="true" type="application/x-lastpass" id="hiddenlpsubmitdiv" style="display: none;"></script>
-<script>try{(function() { for(var lastpass_iter=0; lastpass_iter < document.forms.length; lastpass_iter++){ var lastpass_f = document.forms[lastpass_iter]; if(typeof(lastpass_f.lpsubmitorig2)=="undefined"){ lastpass_f.lpsubmitorig2 = lastpass_f.submit; if (typeof(lastpass_f.lpsubmitorig2)=='object'){ continue;}lastpass_f.submit = function(){ var form=this; var customEvent = document.createEvent("Event"); customEvent.initEvent("lpCustomEvent", true, true); var d = document.getElementById("hiddenlpsubmitdiv"); if (d) {for(var i = 0; i < document.forms.length; i++){ if(document.forms[i]==form){ if (typeof(d.innerText) != 'undefined') { d.innerText=i.toString(); } else { d.textContent=i.toString(); } } } d.dispatchEvent(customEvent); }form.lpsubmitorig2(); } } }})()}catch(e){}</script>
+<script src="static/jquery-confirm.min.js"></script>
+<script>
+    var add_user = function () {
+        $.alert({
+            title: 'Alert!',
+            content: 'Simple alert!',
+        });
+    };
+    var update_user = function (uid) {
+        $.confirm({
+            title:"更新用户",
+            content:'url:edit_user.php?uid='+uid,
+        });
+
+    };
+    var clear_traffic = function (uid) {
+        $.alert({
+            title: 'Alert!',
+            content: 'Simple alert!',
+        });
+    };
+    var send_alert = function (sckey) {
+        $.confirm({
+            title: '发送微信提醒!',
+            content: '<input type="text" class="form-control" id="alert-title"><textarea class="form-control" rows="3" id="alert-msg"></textarea>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        type:"POST",
+                        url:"action/_send_alert.php",
+                        dataType:"json",
+                        data:{
+                            title: $("#alert-title").val(),
+                            msg: $("#alert-msg").val(),
+                            key: sckey
+                        },
+                        success:function(data){
+                            if(data.ok === 'success'){
+                                $.alert('发送成功');
+                            }else{
+                                $.alert(data.msg);
+                            }
+                        },
+                        error:function(jqXHR){
+                            alert("后台错误："+jqXHR.status);
+                        }
+                    });
+                }
+            },
+        });
+    };
+</script>
 </body>
 </html>
