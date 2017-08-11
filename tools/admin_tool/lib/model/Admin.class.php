@@ -80,8 +80,24 @@ class Admin
     }
 
     //新增用户
-    function add_user() {
+    function add_user($username,$email,$pass){
 
+        $sspass = $this->genStr();
+
+        $this->db->insert('user',[
+            "name" => $username,
+            "email" => $email,
+            "pass" => md5($pass),
+            "passwd" =>  $sspass,
+            "t" => '0',
+            "u" => '0',
+            "d" => '0',
+            "transfer_enable" => '21474836480',
+            "port" => $this->GetLastPort()+rand(1,5),
+            "#reg_date" =>  'NOW()',
+            "#expire_date" =>  'NOW()',
+            "#update_date" =>  'NOW()'
+        ]);
     }
 
     //修改用户
@@ -93,4 +109,23 @@ class Admin
     function delete_user() {
 
     }
+
+    function GetLastPort(){
+        $datas = $this->db->select('user',"*",[
+            "ORDER" => "uid DESC",
+            "LIMIT" => 1
+        ]);
+        return $datas['0']['port'];
+    }
+
+    //获取随机字符串
+    function genStr($len = 16) {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $password = '';
+        for ( $i = 0; $i < $len; $i++ ) {
+            $password .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+        }
+        return $password;
+    }
+
 }

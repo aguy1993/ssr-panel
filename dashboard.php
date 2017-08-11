@@ -61,7 +61,23 @@ $base64pass = base64_encode($user_info['passwd']);
         <?php
             $servers = $server->list_server();
             foreach ($servers as $key) {
-                echo '<a href="#" onclick="'."showQrcode('ssr://".base64_encode($key['host'].':'.$user_info['port'].':'.$key['protocol'].':'.$key['method'].':'.$key['obfs'].':'.$base64pass.'/?'.$key['param'])."')".'"">'.$key['name'].'</a> ';
+                echo '<a href="#" onclick="'."showQrcode('ssr://".
+                    base64_encode($key['host'].
+                        ':'.
+                        $user_info['port'].
+                        ':'.
+                        $key['protocol'].
+                        ':'.
+                        $key['method'].
+                        ':'.
+                        $key['obfs'].
+                        ':'.
+                        $base64pass.
+                        '/?'.
+                        $key['param']).
+                    "','".$key['host']."','".$user_info['port']."','".$user_info['passwd']."','".$key['method']."','".$key['protocol']."','".$key['obfs']."')".
+                    '"">'.
+                    $key['name'].'</a> ';
             }
         ?>
     </nav>
@@ -121,7 +137,7 @@ $base64pass = base64_encode($user_info['passwd']);
      * 弹出二维码
      * @param ssr
      */
-    var showQrcode = function (ssr) {
+    var showQrcode = function (ssr,ip,port,pass,method,protocol,obfs) {
         $.dialog({
             title: '扫描二维码',
             animation: 'scale',
@@ -129,7 +145,31 @@ $base64pass = base64_encode($user_info['passwd']);
             '<div class="input-group">' +
             '<input id="ssr-url" class="form-control" type="url" value="'+ssr+'" />' +
             '<span class="input-group-addon btn btn-info" onclick="jsCopy()">复制</span>' +
-            '</div>',
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">服务器IP</span>' +
+            '<input type="text" class="form-control" value="'+ip+'">' +
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">服务器端口</span>' +
+            '<input type="text" class="form-control" value="'+port+'">' +
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">密码</span>' +
+            '<input type="text" class="form-control" value="'+pass+'">' +
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">加密</span>' +
+            '<input type="text" class="form-control" value="'+method+'">' +
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">协议</span>' +
+            '<input type="text" class="form-control" value="'+protocol+'">' +
+            '</div><br>' +
+            '<div class="input-group"> ' +
+            '<span class="input-group-addon">混淆</span>' +
+            '<input type="text" class="form-control" value="'+obfs+'">' +
+            '</div><br>',
         });
     };
     /**
